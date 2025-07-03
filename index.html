@@ -1124,54 +1124,80 @@
             </div>
         </div>
     </footer>
-    <script>
+<script>
     // Hamburger menu open/close for mobile
-    const menuBtn = document.querySelector('.md\\:hidden button');
-    const navMenu = document.querySelector('.hidden.md\\:flex');
-    let mobileMenuDiv;
+    document.addEventListener('DOMContentLoaded', function () {
+        const menuBtn = document.querySelector('.md\\:hidden button');
+        const navMenu = document.querySelector('.hidden.md\\:flex');
+        let mobileMenuDiv;
 
-    menuBtn.addEventListener('click', function (e) {
-        e.stopPropagation();
-        // If already open, close
-        if (document.getElementById('mobile-nav')) {
-            document.getElementById('mobile-nav').remove();
-            return;
-        }
-        // Clone the desktop menu for mobile
-        mobileMenuDiv = navMenu.cloneNode(true);
-        mobileMenuDiv.className = "block md:hidden bg-[#14183d] px-6 py-4 fixed top-16 left-0 w-full z-50";
-        mobileMenuDiv.id = "mobile-nav";
-        document.body.appendChild(mobileMenuDiv);
+        if (!menuBtn || !navMenu) return;
 
-        // Enable dropdowns in mobile menu
-        mobileMenuDiv.querySelectorAll('.relative.group').forEach(drop => {
-            drop.addEventListener('click', function(e) {
-                e.stopPropagation();
-                // Toggle dropdown
-                const dropdown = drop.querySelector('div.absolute');
-                if (dropdown) {
-                    dropdown.classList.toggle('opacity-0');
-                    dropdown.classList.toggle('invisible');
-                    dropdown.classList.toggle('opacity-100');
-                    dropdown.classList.toggle('visible');
-                }
+        menuBtn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            // If already open, close
+            if (document.getElementById('mobile-nav')) {
+                document.getElementById('mobile-nav').remove();
+                return;
+            }
+            // Clone the desktop menu for mobile
+            mobileMenuDiv = navMenu.cloneNode(true);
+            mobileMenuDiv.className = "block md:hidden bg-[#14183d] px-6 py-4 fixed top-16 left-0 w-full z-50";
+            mobileMenuDiv.id = "mobile-nav";
+
+            // Separate Blog, Notices, Contact as their own rows
+            const links = Array.from(mobileMenuDiv.querySelectorAll(':scope > a'));
+            if (links.length) {
+                links.forEach(link => {
+                    link.classList.add('block', 'w-full', 'text-left', 'py-3', 'border-b', 'border-[#23265a]');
+                });
+            }
+
+            // Also, make dropdown triggers full width for easy tap
+            mobileMenuDiv.querySelectorAll('.relative.group > a').forEach(trigger => {
+                trigger.classList.add('block', 'w-full', 'text-left', 'py-3', 'border-b', 'border-[#23265a]');
+            });
+
+            document.body.appendChild(mobileMenuDiv);
+
+            // Enable dropdowns in mobile menu
+            mobileMenuDiv.querySelectorAll('.relative.group').forEach(drop => {
+                drop.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    // Toggle dropdown
+                    const dropdown = drop.querySelector('div.absolute');
+                    if (dropdown) {
+                        dropdown.classList.toggle('opacity-0');
+                        dropdown.classList.toggle('invisible');
+                        dropdown.classList.toggle('opacity-100');
+                        dropdown.classList.toggle('visible');
+                    }
+                });
+            });
+
+            // Close menu on link click
+            mobileMenuDiv.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenuDiv.remove();
+                });
             });
         });
 
-        // Close menu on link click
-        mobileMenuDiv.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', () => {
-                mobileMenuDiv.remove();
-            });
+        // Optional: close menu if clicked outside
+        document.addEventListener('click', function(e) {
+            const mobileNav = document.getElementById('mobile-nav');
+            if (mobileNav && !mobileNav.contains(e.target) && !menuBtn.contains(e.target)) {
+                mobileNav.remove();
+            }
         });
-    });
 
-    // Optional: close menu if clicked outside
-    document.addEventListener('click', function(e) {
-        const mobileNav = document.getElementById('mobile-nav');
-        if (mobileNav && !mobileNav.contains(e.target) && !menuBtn.contains(e.target)) {
-            mobileNav.remove();
-        }
+        // Close hamburger menu on scroll
+        window.addEventListener('scroll', function () {
+            const mobileNav = document.getElementById('mobile-nav');
+            if (mobileNav) {
+                mobileNav.remove();
+            }
+        });
     });
 </script>
 </body>
